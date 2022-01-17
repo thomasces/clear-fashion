@@ -152,7 +152,7 @@ uniq.forEach(name => console.log("Number of products for the brand", name , bran
 // 2. Log the sort
 
 uniq.forEach(name => {
-  brands[name].sort(SortedByPrice)
+  SortedByPrice(brands[name]).reverse()
 })
 console.log("Price sorted for each brand")
 console.log(brands)
@@ -161,8 +161,11 @@ console.log(brands)
 // 1. For each brand, sort the products by date, from old to recent
 // 2. Log the sort
 
-
-
+uniq.forEach(name => {
+  SortedByDate(brands[name])
+})
+console.log("Date sorted for each brand")
+console.log(brands)
 
 
 /**
