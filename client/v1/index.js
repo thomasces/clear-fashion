@@ -76,6 +76,13 @@ const marketplaceByPrice=SortedByPrice(marketplace)
 console.log("Marketplace sorted by price: ")
 console.log(marketplaceByPrice)
 
+/*
+// To check the prices ascending.
+let prices_string = '';
+marketplaceByPrice.forEach(article => prices_string += article.price + ';');
+console.log(prices_string);
+*/
+
 // 🎯 TODO: Sort by date
 // 1. Create a function to sort the marketplace objects by products date
 // 2. Create a variable and assign it the list of products by date from recent to old
@@ -90,9 +97,16 @@ function SortedByDate(marketplace) {
   return marketplace;
 }
 
-const marketplaceByDate=SortedByDate(marketplace);
+const marketplaceByDate=SortedByDate(marketplace).reverse();
 console.log("Marketplace sorted by date: ")
 console.log(marketplaceByDate)
+
+/*
+// To check the dates ascending.
+let dates_string = '';
+marketplaceByDate.forEach(article => dates_string += article.date + '\t');
+console.log(dates_string);
+*/
 
 // 🎯 TODO: Filter a specific price range
 // 1. Filter the list of products between 50€ and 100€
@@ -152,20 +166,28 @@ uniq.forEach(name => console.log("Number of products for the brand", name , bran
 // 2. Log the sort
 
 uniq.forEach(name => {
-  SortedByPrice(brands[name]).reverse()
+  brands[name]=SortedByPrice(brands[name]).reverse()
 })
 console.log("Price sorted for each brand")
 console.log(brands)
+
+let prices_string = '';
+brands["1083"].forEach(article => prices_string += article.price + ';');
+console.log(prices_string);
 
 // 🎯 TODO: Sort by date for each brand
 // 1. For each brand, sort the products by date, from old to recent
 // 2. Log the sort
 
 uniq.forEach(name => {
-  SortedByDate(brands[name])
+  brands[name]=SortedByDate(brands[name])
 })
 console.log("Date sorted for each brand")
 console.log(brands)
+
+let dates_string = '';
+brands["1083"].forEach(article => dates_string += article.date + '\t');
+console.log(dates_string);
 
 
 /**
@@ -179,7 +201,17 @@ console.log(brands)
 // 1. Compute the p90 price value of each brand
 // The p90 value (90th percentile) is the lower value expected to be exceeded in 90% of the products
 
+console.log('Compute the p90 price value');
+let brands_sort_price = JSON.parse(JSON.stringify(brands));
+let p90={};
 
+Object.keys(brands_sort_price).forEach(name =>
+  {
+    const n90 = Math.ceil(brands_sort_price[name].length*0.9);
+    p90[name] = { 'P90 price value' : brands_sort_price[name][n90].price + ' €'};
+    
+  });
+  console.table(p90);
 
 
 
@@ -254,28 +286,80 @@ const COTELE_PARIS = [
 // 🎯 TODO: New released products
 // // 1. Log if we have new products only (true or false)
 // // A new product is a product `released` less than 2 weeks.
+console.log('New released products');
 
+let cotele_sort_date = COTELE_PARIS.slice();
+cotele_sort_date.sort((a1,a2) => 
+	a1.released < a2.released ?  1 : 
+		a1.released === a2.released ?  0 : -1);
+		
+const max_date = new Date(cotele_sort_date[0].released);
+const min_date = new Date(cotele_sort_date.slice(-1)[0].released);
+
+const one_day = 24 * 60 * 60 * 1000;
+const diff = (max_date - min_date) / one_day;
+let check = diff < 15;
+console.log(check);
+console.log(check ?
+	'Assuming that today is the most recent product\'s released date, the difference \
+between today and the oldest product\'s released date is less than 2 weeks : only\
+ ' + diff + ' days, so we have only new released products' :
+	'More than 2 weeks separate the newest and the oldest product of the list ' + diff + ' days, \
+so we cannot have only new released products, even if today was the \
+most recent product\'s released date');
 
 // 🎯 TODO: Reasonable price
 // // 1. Log if coteleparis is a reasonable price shop (true or false)
 // // A reasonable price if all the products are less than 100€
+console.log('Reasonable price');
 
+check = true;
+COTELE_PARIS.forEach(article =>
+{
+	if (article.price >= 100)
+	{ check = false; }
+});
+console.log(check);
+console.log(check ?
+	'All the articles are under 100€, it\'s a reasonable price shop' :
+	'Some articles are more expensive than 100€, it\'s not a reasonable price shop');
 
 // 🎯 TODO: Find a specific product
 // 1. Find the product with the uuid `b56c6d88-749a-5b4c-b571-e5b5c6483131`
 // 2. Log the product
-
+console.log('Find a specific product');
+let product_expected;
+COTELE_PARIS.forEach(article => 
+{
+	if (article.uuid === 'b56c6d88-749a-5b4c-b571-e5b5c6483131')
+	{product_expected = article}
+});
+console.table(product_expected);
 
 // 🎯 TODO: Delete a specific product
 // 1. Delete the product with the uuid `b56c6d88-749a-5b4c-b571-e5b5c6483131`
 // 2. Log the new list of product
+console.log('Delete a specific product');
+
+const index_remove = COTELE_PARIS.indexOf(product_expected);
+COTELE_PARIS.splice(index_remove, 1)
+console.table(COTELE_PARIS);
+
 
 // 🎯 TODO: Save the favorite product
+console.log('Save the favorite product');
+
 let blueJacket = {
   'link': 'https://coteleparis.com/collections/tous-les-produits-cotele/products/la-veste-bleu-roi',
   'price': 110,
   'uuid': 'b4b05398-fee0-4b31-90fe-a794d2ccfaaa'
 };
+
+blueJacket.name = 'BLUE JACKET';
+blueJacket.released = new Date().toISOString().slice(0, 10);
+COTELE_PARIS.push(blueJacket);
+console.table(COTELE_PARIS);
+
 
 // we make a copy of blueJacket to jacket
 // and set a new property `favorite` to true
@@ -285,6 +369,13 @@ jacket.favorite = true;
 
 // 1. Log `blueJacket` and `jacket` variables
 // 2. What do you notice?
+console.log('Blue jacket');
+console.table(blueJacket);
+
+console.log('Jacket');
+console.table(jacket);
+
+console.log('Both blueJacket and jacket have favorite as property');
 
 blueJacket = {
   'link': 'https://coteleparis.com/collections/tous-les-produits-cotele/products/la-veste-bleu-roi',
@@ -293,7 +384,17 @@ blueJacket = {
 };
 
 // 3. Update `jacket` property with `favorite` to true WITHOUT changing blueJacket properties
+jacket = {};
+Object.keys(blueJacket).forEach(prop => jacket[prop] = blueJacket[prop]);
+jacket.favorite = true;
 
+console.log('Blue jacket');
+console.table(blueJacket);
+
+console.log('Jacket');
+console.table(jacket);
+
+console.log('Now we notice jacket has a favorite property while blueJacket doesn\'t.');
 
 
 
@@ -307,3 +408,7 @@ blueJacket = {
 // 🎯 TODO: Save in localStorage
 // 1. Save MY_FAVORITE_BRANDS in the localStorage
 // 2. log the localStorage
+console.log('Save in localStorage');
+
+localStorage.object = JSON.stringify(MY_FAVORITE_BRANDS);
+console.table(JSON.parse(localStorage.object));
