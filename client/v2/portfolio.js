@@ -106,14 +106,32 @@ const render = (products, pagination) => {
  * Declaration of all Listeners
  */
 
+
+/**
+ * Refresh function of the display
+ */
+function refresh(){
+  fetchProducts(currentPagination.currentPage, currentPagination.pageSize)
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+};
+
 /**
  * Select the number of products to display
  * @type {[type]}
  */
 selectShow.addEventListener('change', event => {
-  fetchProducts(currentPagination.currentPage, parseInt(event.target.value))
-    .then(setCurrentProducts)
-    .then(() => render(currentProducts, currentPagination));
+  currentPagination.pageSize=parseInt(event.target.value);
+  refresh();
+});
+
+/**
+ * Select the number of products to display
+ * @type {[type]}
+ */
+ selectPage.addEventListener('change', event => {
+  currentPagination.currentPage=parseInt(event.target.value);
+  refresh()
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
