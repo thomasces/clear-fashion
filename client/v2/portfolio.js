@@ -8,6 +8,7 @@ let currentPagination = {};
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
+const selectBrand = document.querySelector('#brand-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -81,9 +82,29 @@ const renderPagination = pagination => {
     {'length': pageCount},
     (value, index) => `<option value="${index + 1}">${index + 1}</option>`
   ).join('');
-
+  
   selectPage.innerHTML = options;
   selectPage.selectedIndex = currentPage - 1;
+};
+
+/**
+ * Render brand selector
+ * @param  {Object} brand
+ */
+ const renderBrands = products => {
+ const brand=[]
+ products.forEach(obj => brand.push(obj.brand))  
+ const name=new Set(brand)
+ let brand_name = Array.from(name);
+ const options = Array.from(
+   brand_name,
+   (index) => `<option value="${index}">${index}</option>`
+ ).join('');
+  
+ console.log(options)
+ 
+ selectBrand.innerHTML = options;
+ selectBrand.selectedIndex = name;
 };
 
 /**
@@ -100,6 +121,7 @@ const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
   renderIndicators(pagination);
+  renderBrands(products)
 };
 
 /**
@@ -133,6 +155,16 @@ selectShow.addEventListener('change', event => {
   currentPagination.currentPage=parseInt(event.target.value);
   refresh()
 });
+
+/**
+ * Select the brand of products to display
+ * @type {[type]}
+ */
+ selectBrand.addEventListener('change', event => {
+  test=true
+  
+});
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
