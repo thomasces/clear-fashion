@@ -4,6 +4,7 @@
 // current products on the page
 let currentProducts = [];
 let currentPagination = {};
+let currentBrand = "";
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -92,19 +93,21 @@ const renderPagination = pagination => {
  * @param  {Object} brand
  */
  const renderBrands = products => {
- const brand=[]
- products.forEach(obj => brand.push(obj.brand))  
- const name=new Set(brand)
- let brand_name = Array.from(name);
- const options = Array.from(
-   brand_name,
-   (index) => `<option value="${index}">${index}</option>`
- ).join('');
+  const brand=[];
+  const options = products.map(obj => {
+    if (!brand.includes(obj.brand)){
+      brand.push(obj.brand);
+      return `<option value="${obj.brand}" ${currentBrand===obj.brand ? "selected" : ""}>${obj.brand}</option>`
+    }
+  });
   
- console.log(options)
- 
- selectBrand.innerHTML = options;
- selectBrand.selectedIndex = name;
+  options.unshift(`<option value="">All brands</option>`)
+
+  selectBrand.innerHTML = options.join('')
+
+  if(currentBrand===""){
+    selectBrand.selectedIndex = 0
+  }
 };
 
 /**
@@ -135,7 +138,12 @@ const render = (products, pagination) => {
 function refresh(){
   fetchProducts(currentPagination.currentPage, currentPagination.pageSize)
     .then(setCurrentProducts)
-    .then(() => render(currentProducts, currentPagination));
+    .then(() => {
+      if(currentBrand!==""){
+        currentProducts=currentProducts.filter(obj => obj.brand === currentBrand)
+      }
+      render(currentProducts, currentPagination)
+    });
 };
 
 /**
@@ -143,11 +151,12 @@ function refresh(){
  */
 selectShow.addEventListener('change', event => {
   currentPagination.pageSize=parseInt(event.target.value);
+  currentPagination.currentPage=1;
   refresh();
 });
 
 /**
- * Select the number of products to display
+ * Select the page to display
  * @type {[type]}
  */
  selectPage.addEventListener('change', event => {
@@ -160,8 +169,8 @@ selectShow.addEventListener('change', event => {
  * @type {[type]}
  */
  selectBrand.addEventListener('change', event => {
-  test=true
-  
+   currentBrand=event.target.value
+   refresh()
 });
 
 
