@@ -140,7 +140,6 @@ function refresh(){
 
 /**
  * Select the number of products to display
- * @type {[type]}
  */
 selectShow.addEventListener('change', event => {
   currentPagination.pageSize=parseInt(event.target.value);
