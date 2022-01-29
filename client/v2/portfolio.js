@@ -16,6 +16,7 @@ const spanNbNewProducts = document.querySelector('#nbNewProd');
 const spanp50 = document.querySelector('#p50');
 const spanp90 = document.querySelector('#p90');
 const spanp95 = document.querySelector('#p95');
+const spanLastReleased = document.querySelector('#last-released');
 const selectSort = document.querySelector('#sort-select');
 
 /**
@@ -141,6 +142,10 @@ const renderIndicators = pagination => {
   spanp50.innerHTML= Percent(currentProducts,50) + " €"
   spanp90.innerHTML= Percent(currentProducts,90) + " €"
   spanp95.innerHTML= Percent(currentProducts,95) + " €"
+
+  const temp=currentProducts
+  spanLastReleased.innerHTML=temp.sort((x,y)=> new Date(x.released)-new Date(y.released)).reverse()[0].released
+  console.log(currentProducts)
 };
 
 const render = (products, pagination) => {
