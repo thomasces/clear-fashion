@@ -145,7 +145,6 @@ function refresh(){
       }
       render(currentProducts, currentPagination)
     });
-    selectSort.value="no-filter"
 };
 
 /**
@@ -190,8 +189,13 @@ selectShow.addEventListener('change', event => {
       currentProducts=currentProducts.sort((x,y)=> x.price-y.price).reverse()
       break;
     case 'date-asc':
+      currentProducts=currentProducts.sort((x,y)=> new Date(x.released)-new Date(y.released)).reverse()
       break;
     case 'date-desc':
+      currentProducts=currentProducts.sort((x,y)=> new Date(x.released)-new Date(y.released))
+      break;
+    case 'no-filter':
+      refresh()
       break;
   }
   renderProducts(currentProducts,currentPagination)
