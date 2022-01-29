@@ -13,6 +13,9 @@ const selectBrand = document.querySelector('#brand-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 const spanNbNewProducts = document.querySelector('#nbNewProd');
+const spanp50 = document.querySelector('#p50');
+const spanp90 = document.querySelector('#p90');
+const spanp95 = document.querySelector('#p95');
 const selectSort = document.querySelector('#sort-select');
 
 /**
@@ -48,6 +51,18 @@ const fetchProducts = async (page = 1, size = 12) => {
     console.error(error);
     return {currentProducts, currentPagination};
   }
+};
+
+/**
+ * Percentile calculator
+ * @param {*} products 
+ * @param {*} nb 
+ */
+
+function Percent(products,nb) {
+  const temp =currentProducts.sort((x,y)=> x.price-y.price)
+  const index=Math.round(temp.length*(nb/100))
+  return products[index].price
 };
 
 /**
@@ -122,13 +137,17 @@ const renderIndicators = pagination => {
   spanNbProducts.innerHTML = count;
 
   spanNbNewProducts.innerHTML=currentProducts.filter(obj => new Date()-new Date(obj.released) < (24*60*60*1000*14)).length
+
+  spanp50.innerHTML= Percent(currentProducts,50) + " €"
+  spanp90.innerHTML= Percent(currentProducts,90) + " €"
+  spanp95.innerHTML= Percent(currentProducts,95) + " €"
 };
 
 const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
+  renderBrands(products);
   renderIndicators(pagination);
-  renderBrands(products)
 };
 
 /**
@@ -148,6 +167,7 @@ function refresh(){
       }
       render(currentProducts, currentPagination)
     });
+  selectSort.value="no-filter"
 };
 
 /**
