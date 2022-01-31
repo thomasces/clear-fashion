@@ -5,6 +5,7 @@
 let currentProducts = [];
 let currentPagination = {};
 let currentBrand = "";
+let favoriteProduct = [];
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -67,6 +68,25 @@ function Percent(products,nb) {
 };
 
 /**
+ * check fav
+ * @param {*} id_prod
+ */
+function favProd(id_prod){
+  const product=currentProducts.find(obj => {
+    return obj.uuid === id_prod
+  })
+  const id= currentProducts.indexOf(product)
+  currentProducts[id].favorite =!product.favorite
+  if(currentProducts[id].favorite){
+    favoriteProduct.push(currentProducts[id])
+  }
+  else{favoriteProduct=favoriteProduct.filter(obj => obj.uuid !== id_prod)  }
+  render(currentProducts,currentPagination)
+}
+
+
+
+/**
  * Render list of products
  * @param  {Array} products
  */
@@ -80,6 +100,8 @@ const renderProducts = products => {
         <span>${product.brand}</span>
         <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price}</span>
+        <input type="checkbox" onclick="favProd('${product.uuid}')"${product.favorite ? "checked" : ""}>
+        <label for="favorite-product">Add to favorite</label>
       </div>
     `;
     })
@@ -145,7 +167,6 @@ const renderIndicators = pagination => {
 
   const temp=currentProducts
   spanLastReleased.innerHTML=temp.sort((x,y)=> new Date(x.released)-new Date(y.released)).reverse()[0].released
-  console.log(currentProducts)
 };
 
 const render = (products, pagination) => {
@@ -167,6 +188,9 @@ function refresh(){
   fetchProducts(currentPagination.currentPage, currentPagination.pageSize)
     .then(setCurrentProducts)
     .then(() => {
+      updateFavProd()
+    })
+    .then(() => {
       if(currentBrand!==""){
         currentProducts=currentProducts.filter(obj => obj.brand === currentBrand)
       }
@@ -174,6 +198,18 @@ function refresh(){
     });
   selectSort.value="no-filter"
 };
+
+/**
+ * update the product list with fav to keep them while changing the page
+ */
+function updateFavProd(){
+  const prods = currentProducts.map(obj => {
+    const fav=favoriteProduct.find(favobj => favobj.uuid === obj.uuid)
+    if(fav){obj.favorite=true}
+    return obj
+  })
+  currentProducts=prods
+}
 
 /**
  * Select the number of products to display
