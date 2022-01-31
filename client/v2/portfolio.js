@@ -288,6 +288,14 @@ document.getElementById('recent_released').addEventListener('click', function ()
 });
 
 /**
+ * Select my fav products 
+ */
+ document.getElementById('fav_products').addEventListener('click', function () {
+  currentProducts=currentProducts.filter(obj=>obj.favorite===true)
+  render(currentProducts,currentPagination)
+});
+
+/**
  * Select the products that have reasonable price (less than 50€)
  */
  document.getElementById('reasonable_price').addEventListener('click', function () {
