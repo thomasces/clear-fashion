@@ -1,13 +1,56 @@
 /* eslint-disable no-console, no-process-exit */
 const dedicatedbrand = require('./sources/dedicatedbrand');
+const montlimartbrand = require('./sources/montlimartbrand');
+const adressebrand = require('./sources/adressebrand');
+const savedProducts = require('./products.json');
+const fs = require('fs');
 
-async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
+const links = {
+  'dl': 'https://www.dedicatedbrand.com/en/men/all-men',
+  'ml': 'https://www.montlimart.com/toute-la-collection.html?limit=all',
+  'al': 'https://adresse.paris/630-toute-la-collection'
+}
+
+async function sandbox(eshop) {
   try {
-    console.log(`🕵️‍♀️  browsing ${eshop} source`);
+    console.log(`🕵️‍♀️ browsing listed sources`);
 
-    const products = await dedicatedbrand.scrape(eshop);
+    const products = await dedicatedbrand.scrape(links['dl']);
+    const products2 = await montlimartbrand.scrape(links['ml']);
+    const products3 = await adressebrand.scrape(links['al']);
 
-    console.log(products);
+    const all_products = products.concat(products2, products3);
+
+    let today = (new Date()).toLocaleDateString('fr-FR');
+    for (let i = 0; i < all_products.length; i++) {
+      all_products[i].date = today;
+      let alreadyExist = false;
+      for (let j = 0; j < savedProducts.length && alreadyExist == false; j++) {
+        if (all_products[i].link == savedProducts[j].link) {
+          alreadyExist = true;
+        }
+      }
+      if (alreadyExist != true) {
+        savedProducts.push(all_products[i]);
+      }
+    }
+
+    //supprime le produit s'il n'existe plus
+
+    /* for (let i = 0; i < savedProducts.length; i++) {
+      let alreadyExist = false;
+      for (let j = 0; j < finalProducts.length && alreadyExist == false; j++) {
+        if (all_products[i].link == savedProducts[j].link) {
+          alreadyExist = true;
+        }
+      }
+      if (alreadyExist == false) {
+        savedProducts.splice(i, 1);
+      }
+    } */
+
+    fs.writeFileSync("./products.json", JSON.stringify(savedProducts, null, 4));
+
     console.log('done');
     process.exit(0);
   } catch (e) {
@@ -16,6 +59,6 @@ async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
   }
 }
 
-const [,, eshop] = process.argv;
+const [, , eshop] = process.argv;
 
 sandbox(eshop);
