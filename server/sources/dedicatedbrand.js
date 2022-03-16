@@ -56,7 +56,6 @@ const parse2 = data => {
           .find('.productList-image img')
           .attr('data-src'),
         'id': uuidv5(link, uuidv5.URL),
-        'date':''
       };
     })
     .get();

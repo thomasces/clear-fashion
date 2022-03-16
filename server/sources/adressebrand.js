@@ -47,7 +47,6 @@ const parse2 = data => {
             .find('.left-block .product-image-container .product_img_link img')
             .attr('data-original'),
           'id': uuidv5(link, uuidv5.URL),
-          'date':''
         };
       }
       else {

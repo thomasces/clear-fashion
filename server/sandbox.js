@@ -22,32 +22,31 @@ async function sandbox(eshop) {
     const all_products = products.concat(products2, products3);
 
     let today = (new Date()).toLocaleDateString('fr-FR');
+    
     for (let i = 0; i < all_products.length; i++) {
       all_products[i].date = today;
       let alreadyExist = false;
       for (let j = 0; j < savedProducts.length && alreadyExist == false; j++) {
-        if (all_products[i].link == savedProducts[j].link) {
+        if ((all_products[i].name == savedProducts[j].name) && (all_products[i].price == savedProducts[j].price)) {
           alreadyExist = true;
         }
       }
-      if (alreadyExist != true) {
+      if (alreadyExist != true && all_products[i].price!=null) {
         savedProducts.push(all_products[i]);
       }
     }
 
-    //supprime le produit s'il n'existe plus
-
-    /* for (let i = 0; i < savedProducts.length; i++) {
+    for (let i = 0; i < savedProducts.length; i++) {
       let alreadyExist = false;
-      for (let j = 0; j < finalProducts.length && alreadyExist == false; j++) {
-        if (all_products[i].link == savedProducts[j].link) {
+      for (let j = 0; j < all_products.length && alreadyExist == false; j++) {
+        if ((all_products[j].name == savedProducts[i].name) && (all_products[j].price == savedProducts[i].price)) {
           alreadyExist = true;
         }
       }
       if (alreadyExist == false) {
         savedProducts.splice(i, 1);
       }
-    } */
+    }
 
     fs.writeFileSync("./products.json", JSON.stringify(savedProducts, null, 4));
 
