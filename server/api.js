@@ -45,6 +45,7 @@ app.get('/search', async (request, response) => {
     price = parseFloat(request.query.price);
   }
   result = await collection.find({"brand":{$in:brand},"price":{$lte:price}}).limit(limit).toArray();
+  result = [{"limit":limit, "total":result.length,"result":result}]
   response.send(result);
 })
 
