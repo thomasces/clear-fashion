@@ -30,6 +30,7 @@ const parse2 = data => {
         .attr('href');
       if (link != null && link != undefined) {
         return {
+          '_id': uuidv5(link, uuidv5.URL),
           'link': link,
           'brand': 'ADRESSE Paris',
           'price': parseFloat(
@@ -46,7 +47,6 @@ const parse2 = data => {
           'photo': $(element)
             .find('.left-block .product-image-container .product_img_link img')
             .attr('data-original'),
-          'id': uuidv5(link, uuidv5.URL),
         };
       }
       else {

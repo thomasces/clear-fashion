@@ -1,5 +1,6 @@
 const { MongoClient } = require('mongodb');
-const MONGODB_URI = 'mongodb+srv://admin:lKg6bfK9APixjW4v@cluster0.kibuz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+require('dotenv').config({ path: './.env' })
+const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB_NAME = 'clearfashionbythomas';
 const products = require('./products.json');
 let collection;
@@ -8,12 +9,12 @@ const connect = async () => {
     const client = await MongoClient.connect(MONGODB_URI, { 'useNewUrlParser': true });
     const db = client.db(MONGODB_DB_NAME);
     collection = db.collection('products');
-    //collection.insertMany(products);
-    await brandProduct("montlimart");
-    await priceProduct(10);
-    await priceSorted();
-    await dateSorted();
-    await recentProds();
+    collection.insertMany(products);
+    //await brandProduct("montlimart");
+    //await priceProduct(10);
+    //await priceSorted();
+    //await dateSorted();
+    //await recentProds();
     process.exit(0);
 }
 

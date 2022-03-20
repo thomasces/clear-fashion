@@ -4,6 +4,8 @@ const montlimartbrand = require('./sources/montlimartbrand');
 const adressebrand = require('./sources/adressebrand');
 const savedProducts = require('./products.json');
 const fs = require('fs');
+const db = require('./db');
+const { Console } = require('console');
 
 const links = {
   'dl': 'https://www.dedicatedbrand.com/en/men/all-men',
@@ -49,6 +51,7 @@ async function sandbox(eshop) {
     }
 
     fs.writeFileSync("./products.json", JSON.stringify(savedProducts, null, 4));
+    await db.insert(savedProducts);
 
     console.log('done');
     process.exit(0);
