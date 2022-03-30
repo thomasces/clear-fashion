@@ -39,11 +39,11 @@ const setCurrentProducts = ({result, meta}) => {
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
-      `https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+      //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+      `https://server-thomasces.vercel.app/search?page=${page}&size=${size}`
     );
     const body = await response.json();
-
-    if (body.success !== true) {
+    if (body.succes !== true) {
       console.error(body);
       return {currentProducts, currentPagination};
     }
@@ -90,13 +90,14 @@ function favProd(id_prod){
  * Render list of products
  * @param  {Array} products
  */
-const renderProducts = products => {
+ /* const renderProducts = products => {
   const fragment = document.createDocumentFragment();
   const div = document.createElement('div');
   const template = products
     .map(product => {
       return `
       <div class="product" id=${product.uuid}>
+        <img class="imagetehlesouf" src=${product.photo} style="display: block;">
         <span>Brand :</span>
         <strong>${product.brand}</strong>
         <span>Link :</span>
@@ -113,6 +114,32 @@ const renderProducts = products => {
   div.innerHTML = template;
   fragment.appendChild(div);
   sectionProducts.innerHTML = '<h2>Products</h2>';
+  sectionProducts.appendChild(fragment);
+};
+ */
+const renderProducts = products => {
+  let test=document.getElementById("products");
+  test.textContent='';
+
+  let fragment = document.createDocumentFragment();
+  products.forEach((product) =>{
+    let div=document.createElement('div');
+    div.classList.add("product");
+    div.setAttribute("id",`${product._id}`);
+    const template=`
+      <img class="imagetehlesouf" src=${product.photo} style="display: block;">
+      <span>Brand :</span>
+      <strong>${product.brand}</strong>
+      <span>Link :</span>
+      <a href="${product.link}" target="_blank">${product.name}</a>
+      <span>Price :</span>
+      <strong>${product.price} €</strong>
+      <input type="checkbox" onclick="favProd('${product._id}')"${product.favorite ? "checked" : ""}>
+      <label for="favorite-product">Add to favorite</label>
+    `;
+    div.innerHTML=template;
+    fragment.appendChild(div)
+  })
   sectionProducts.appendChild(fragment);
 };
 

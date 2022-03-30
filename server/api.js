@@ -1,13 +1,15 @@
 const cors = require('cors');
+const { parse } = require('dotenv');
 const express = require('express');
 const helmet = require('helmet');
-const { MongoClient } = require('mongodb');
-require('dotenv').config({ path: './.env' })
-const MONGODB_URI = process.env.MONGODB_URI;
+
+const clientPromise = require('./mongodb-client');
 const MONGODB_DB_NAME = 'clearfashionbythomas';
-let collection;
-let data;
-let client;
+var collection;
+var data;
+var client;
+var meta;
+var total;
 
 const PORT = 8092;
 const app = express();
@@ -18,8 +20,19 @@ app.use(cors());
 app.use(helmet());
 app.options('*', cors());
 
-app.get('/', (request, response) => {
-  response.send({ 'ack': true });
+app.get('/', async (request, response) => {
+  client=await clientPromise;
+  data = client.db(MONGODB_DB_NAME);
+  collection = data.collection('products');
+  total = await collection.count({});
+  meta = {"currentPage":1,"pageCount":1,"pageSize":12,"count":total}
+  if(total%12==0){
+    meta["pageCount"]=total/12
+  }
+  else{
+    meta["pageCount"]=Math.floor(total/12)+1
+  }
+  response.send({"ack":true});
 });
 
 app.get('/products/:id', async (request, response) => {
@@ -28,32 +41,47 @@ app.get('/products/:id', async (request, response) => {
   response.send(result);
 })
 
+app.get('/products', async (request, response) => {
+  prods = await collection.find({}).toArray();
+  const donne={result:prods,meta:meta};
+  const d={succes:true,data:donne }
+  response.send(d);
+})
+
 app.get('/search', async (request, response) => {
-  //valeur défaut de limit:
-  let limit = 12;
+  //valeur défaut:
   let brand=["dedicated","montlimart","ADRESSE Paris"];
   let price=100000;
+  let page=1;
+  let size=12;
 
-  if (request.query.limit && parseInt(request.query.limit) > 0 && parseInt(request.query.limit) <= 48) {
-    limit = parseInt(request.query.limit);
+  if (request.query.size && parseInt(request.query.size) > 0 && parseInt(request.query.size) <= 48) {
+    size = parseInt(request.query.size);
   }
   if (request.query.brand) {
     brand = request.query.brand;
   }
-  if (request.query.price && parseFloat(request.query.limit) > 0) {
-    console.log("toto");
+  if (request.query.price && parseFloat(request.query.price) > 0) {
     price = parseFloat(request.query.price);
   }
-  result = await collection.find({"brand":{$in:brand},"price":{$lte:price}}).limit(limit).toArray();
-  result = [{"limit":limit, "total":result.length,"result":result}]
+  if (request.query.page && parseInt(request.query.page)>0 && parseInt(request.query.page)<= 1000){
+    page = parseInt(request.query.page);
+  }
+  meta["pageSize"]=size
+  meta["currentPage"]=page
+  if(total%size==0){
+    meta["pageCount"]=total/size
+  }
+  else{
+    meta["pageCount"]=Math.floor(total/size)+1
+  }
+
+  skiped=(page-1)*size
+
+  prods = await collection.find({"brand":{$in:brand},"price":{$lte:price}}).skip(skiped).limit(size).toArray();
+  const donne={result:prods,meta:meta};
+  const result={succes:true,data:donne}
   response.send(result);
 })
 
-
-app.listen(PORT, async () => {
-  client = await MongoClient.connect(MONGODB_URI, { 'useNewUrlParser': true });
-  data = client.db(MONGODB_DB_NAME);
-  collection = data.collection('products');
-})
-
-console.log(`📡 Running on port ${PORT}`);
+module.exports=app;

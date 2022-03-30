@@ -1,13 +1,10 @@
 body{
-    margin: 0 auto;
     max-width: 50em;
     font-family: "Helvetica", "Arial", sans-serif;
     line-height: 1.5;
     padding: 4em 1em;
     color: rgb(245, 244, 244);
-    text-align : center;
 	background-image: url("Bcg1.jpg");
-	background-size: cover;
 }
 h2 {
     margin-top: 1em;
@@ -20,4 +17,24 @@ strong {
 }
 a{
     color: #4750cc
-} 
+}
+.productContainer {  display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 15px 15px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      ". . ."
+      ". . ."
+      ". . .";
+  }
+  .product {  display: grid;
+    grid-template-columns: 1fr;
+    gap: 0px 15px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "."
+      ".";
+  }
+  
+  
