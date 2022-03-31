@@ -3,7 +3,7 @@ body{
     line-height: 1.5;
     padding: 4em 1em;
     color: rgb(245, 244, 244);
-    background-image: url("Bcg1.jpg");
+    background-color: #5f8c9b;
 	text-align: center;
 }
 h2 {
@@ -16,7 +16,7 @@ strong {
     color: #faf3f3;
 }
 a{
-    color: #4750cc
+    color: #000000
 }
 .productContainer {
     width: 90%;

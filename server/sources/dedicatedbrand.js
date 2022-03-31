@@ -75,7 +75,7 @@ module.exports.scrape = async url => {
       const nbPage = Math.ceil(result[0]["nbProduct"] / result[0]["nbCurrent"]);
       let finalresult = []
       for (let i = 1; i <= nbPage; i++) {
-        const url2 = 'https://www.dedicatedbrand.com/en/men/all-men?p=' + i.toString();
+        const url2 = url +'?p=' + i.toString();
         try {
           const response2 = await fetch(url2);
 

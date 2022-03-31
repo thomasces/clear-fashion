@@ -9,6 +9,7 @@ const { Console } = require('console');
 
 const links = {
   'dl': 'https://www.dedicatedbrand.com/en/men/all-men',
+  'dl2': 'https://www.dedicatedbrand.com/en/women/all-women',
   'ml': 'https://www.montlimart.com/toute-la-collection.html?limit=all',
   'al': 'https://adresse.paris/630-toute-la-collection'
 }
@@ -18,14 +19,17 @@ async function sandbox(eshop) {
     console.log(`🕵️‍♀️ browsing listed sources`);
 
     const products = await dedicatedbrand.scrape(links['dl']);
+    const products4 = await dedicatedbrand.scrape(links['dl2']);
     const products2 = await montlimartbrand.scrape(links['ml']);
     const products3 = await adressebrand.scrape(links['al']);
 
-    const all_products = products.concat(products2, products3);
+    const all_products = products.concat(products4,products2, products3);
 
-    let today = (new Date()).toLocaleDateString('fr-FR');
+    let a = new Date()
+    const today=a.getFullYear() + "-" + (a.getMonth()+1) + "-" + a.getDate()
     
     for (let i = 0; i < all_products.length; i++) {
+
       all_products[i].date = today;
       let alreadyExist = false;
       for (let j = 0; j < savedProducts.length && alreadyExist == false; j++) {

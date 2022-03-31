@@ -21,17 +21,6 @@ app.use(helmet());
 app.options('*', cors());
 
 app.get('/', async (request, response) => {
-  client=await clientPromise;
-  data = client.db(MONGODB_DB_NAME);
-  collection = data.collection('products');
-  total = await collection.count({});
-  meta = {"currentPage":1,"pageCount":1,"pageSize":12,"count":total}
-  if(total%12==0){
-    meta["pageCount"]=total/12
-  }
-  else{
-    meta["pageCount"]=Math.floor(total/12)+1
-  }
   response.send({"ack":true});
 });
 
@@ -49,6 +38,17 @@ app.get('/products', async (request, response) => {
 })
 
 app.get('/search', async (request, response) => {
+  client=await clientPromise;
+  data = client.db(MONGODB_DB_NAME);
+  collection = data.collection('products');
+  total = await collection.count({});
+  meta = {"currentPage":1,"pageCount":1,"pageSize":12,"count":total}
+  if(total%12==0){
+    meta["pageCount"]=total/12
+  }
+  else{
+    meta["pageCount"]=Math.floor(total/12)+1
+  }
   //valeur défaut:
   let brand=["dedicated","montlimart","ADRESSE Paris"];
   let price=100000;
