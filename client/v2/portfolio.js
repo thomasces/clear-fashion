@@ -73,50 +73,18 @@ function Percent(products,nb) {
  */
 function favProd(id_prod){
   const product=currentProducts.find(obj => {
-    return obj.uuid === id_prod
+    return obj._id === id_prod
   })
   const id= currentProducts.indexOf(product)
+  console.log(product)
   currentProducts[id].favorite =!product.favorite
   if(currentProducts[id].favorite){
     favoriteProduct.push(currentProducts[id])
   }
-  else{favoriteProduct=favoriteProduct.filter(obj => obj.uuid !== id_prod)  }
+  else{favoriteProduct=favoriteProduct.filter(obj => obj._id !== id_prod)  }
   render(currentProducts,currentPagination)
 }
 
-
-
-/**
- * Render list of products
- * @param  {Array} products
- */
- /* const renderProducts = products => {
-  const fragment = document.createDocumentFragment();
-  const div = document.createElement('div');
-  const template = products
-    .map(product => {
-      return `
-      <div class="product" id=${product.uuid}>
-        <img class="imagetehlesouf" src=${product.photo} style="display: block;">
-        <span>Brand :</span>
-        <strong>${product.brand}</strong>
-        <span>Link :</span>
-        <a href="${product.link}" target="_blank">${product.name}</a>
-        <span>Price :</span>
-        <strong>${product.price} €</strong>
-        <input type="checkbox" onclick="favProd('${product.uuid}')"${product.favorite ? "checked" : ""}>
-        <label for="favorite-product">Add to favorite</label>
-      </div>
-    `;
-    })
-    .join('');
-
-  div.innerHTML = template;
-  fragment.appendChild(div);
-  sectionProducts.innerHTML = '<h2>Products</h2>';
-  sectionProducts.appendChild(fragment);
-};
- */
 const renderProducts = products => {
   let test=document.getElementById("products");
   test.textContent='';
@@ -127,7 +95,7 @@ const renderProducts = products => {
     div.classList.add("product");
     div.setAttribute("id",`${product._id}`);
     const template=`
-      <img class="imagetehlesouf" src=${product.photo} style="display: block;">
+      <img class="photo" src=${product.photo} style="display: block;">
       <span>Brand :</span>
       <strong>${product.brand}</strong>
       <span>Link :</span>
@@ -189,14 +157,14 @@ const renderIndicators = pagination => {
 
   spanNbProducts.innerHTML = count;
 
-  spanNbNewProducts.innerHTML=currentProducts.filter(obj => new Date()-new Date(obj.released) < (24*60*60*1000*14)).length
+  spanNbNewProducts.innerHTML=currentProducts.filter(obj => (new Date()-new Date(obj.date)) < (24*60*60*1000*14)).length
 
   spanp50.innerHTML= Percent(currentProducts,50) + " €"
   spanp90.innerHTML= Percent(currentProducts,90) + " €"
   spanp95.innerHTML= Percent(currentProducts,95) + " €"
 
   const temp=currentProducts
-  spanLastReleased.innerHTML=temp.sort((x,y)=> new Date(x.released)-new Date(y.released)).reverse()[0].released
+  spanLastReleased.innerHTML=temp.sort((x,y)=> new Date(x.date)-new Date(y.date)).reverse()[0].date
 };
 
 const render = (products, pagination) => {
@@ -234,7 +202,7 @@ function refresh(){
  */
 function updateFavProd(){
   const prods = currentProducts.map(obj => {
-    const fav=favoriteProduct.find(favobj => favobj.uuid === obj.uuid)
+    const fav=favoriteProduct.find(favobj => favobj._id === obj._id)
     if(fav){obj.favorite=true}
     return obj
   })
@@ -283,10 +251,10 @@ selectShow.addEventListener('change', event => {
       currentProducts=currentProducts.sort((x,y)=> x.price-y.price).reverse()
       break;
     case 'date-asc':
-      currentProducts=currentProducts.sort((x,y)=> new Date(x.released)-new Date(y.released)).reverse()
+      currentProducts=currentProducts.sort((x,y)=> new Date(x.date)-new Date(y.date)).reverse()
       break;
     case 'date-desc':
-      currentProducts=currentProducts.sort((x,y)=> new Date(x.released)-new Date(y.released))
+      currentProducts=currentProducts.sort((x,y)=> new Date(x.date)-new Date(y.date))
       break;
     case 'no-filter':
       refresh()
@@ -309,7 +277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.getElementById('recent_released').addEventListener('click', function () {
   currentProducts.forEach(obj => {
     obj.new=true
-    if((new Date()-new Date(obj.released)) > (24*60*60*1000*14)){
+    if((new Date()-new Date(obj.date)) > (24*60*60*1000*14)){
       obj.new=false;
     }
   })
